@@ -152,6 +152,72 @@ Reason to lock, for example, 3306 not allowed at entering building? Because no o
     * Eventually need to partition the data, into 5 partitions: 600GB of data, 8GB of indexes on each machine. (Partitioning early on, it helps to scale later, just add more nodes)
     * One day, if read/write are super different, Master-Slave, ... 
       write to master, and read from slaves.
+## Design Twitter
+### Scope
+1. List all the functionalities of Twitter: register, login, user profile read and edit, upload images and video, search tweets and users, post, news feed, follow and unfollow a user, hashtag, etc.
+2. Communicate with interviewer to focus on a subset of the above functionalities under limited time. Let's say post, news feed, upload images and videos, follow and unfollow a user, register, login.
+3. Agree on active users based on statistics. Decide the daily AUN (active user numbers), the peak active users (assume daily active users count * 3). For example, Twitter has roughly 150 million active users, guess they visit Twitter 60 times on average a day. So around the level of 100k active users per second. Hence the peak users could be 300k. We can further guess most, like 90%, of the visits are read queries, and write queries take up the rest 10%. 
+   - The AUN (active user number) can be extremely helpful: they decide what server to use: 100 AUN just needs a desktop as server; 1k AUN needs a good dedicated web server; 1m AUN means you need a cluster of web servers. And the complexity of the three architecture is hugely different.
+   - The AUN also decides what database type to use:
+     - A single web server can handle around 1k AUN (realistically, considering the bottleneck of a relational DB usage and business logic)
+     - A single SQL DB can handle around 1k AUN (considering the bottleneck of a relational DB, it could be less if the queries are written badly, such as nested joins and many sub queries)
+     - A single NoSQL DB (Cassandra) can handle around 10k AUN
+     - A single NoSQL DB (Memcached) can take 1M AUN
+### Split
+1. Reiterate the core functionalities and draw a component diagram for them
+```mermaid
+graph LR
+A[Server] --> B(User Service: Register, Login)
+A --> C(Tweet Service: Post, News Feed)
+A --> D(Media Service: Upload images, Upload Videos)
+A --> E(Friendship Service: Follow a user, Unfollow a user)
+```
+2. Decide where to put separate modules(services): could be on the same server or distributed servers depending on the nature, failure consequence and usage frequency of the modules.
+### Storage
+1. Decide the storage strategy for each modules
+  - Relational DB: User Service
+  - NoSQL DB: Tweet Service and Friendship Service (Tweets, Followers mapping)
+  - File System: Media Service
+  - Caching: Just to boot up reading speed
+2. Draw schemas
+
+| User Table(User Service)        | Friendship Table(Friendship Service)         |Tweet Table(Tweet Service)    |
+|:-----------------:|:------------------------:|:-----------------:|
+| id        integer |from_user_id   Foreign Key|id          integer|
+| username  varchar |to_user_id     Foreign Key|user_id Foreign Key|
+| email     varchar |created_at       timestamp|content     varchar|
+| password  varchar |                          |created_at timestamp|
+
+3. System Architect
+- Pull
+  - Read most recent k tweets for each friend and merge to get overall most recent k tweets
+  - Time complexity
+    - Read: O(N) (number of friends) DB Read + k(merge) in memory algorithm
+    - Write: O(1) DB Write
+    - Disadvantage: Blocking read operation can be disturbing
+- Push
+  - Fanout to each follower's local News Feed list
+  - Time complexity
+    - Read: O(1) DB Read
+    - Write: O(N) (Number of followers), DB Write. BUT this can be asynchronous
+    - Disadvantage: There could be too many followers (Elon Musk, Lady Gaga, etc)
+
+| News Feed Table     |
+|:-------------------:|
+| id        integer |
+| owner_id  Foreign Key |
+| tweet_id  Foreign Key |
+| created_at  timestamp |
+
+4. Examples
+
+| Pull     | Push | Pull and Push |
+|:-------:|:------:|:------------:|
+|Facebook | Twitter|Instagram|
+
+### Scale
+1. Optimisation TBD
+2. Maintenance TBD
 
 ## Design UBER
 1. Requirements 
