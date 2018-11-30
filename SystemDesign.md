@@ -1,7 +1,11 @@
 This document is to document the learning process for **System Design**.
-A few concepts to research:
-How to split data between servers? How do multiple server communicate? MapReduce?
-How does server process heavy calculation in background? Threading? NodeJS threading?
+A few thoughts about System Design:
+1. What are the typical types of system design interviews?
+2. How to expand your knowledge base just for system design interviews?
+3. Are there routines to tackle system design interview?
+
+A few key concepts:
+Load Balancer, Memcache, NodeJS, MongoDB, MySQL, Sharding, Consistent Hashing, Message Queue, Pub & Sub, SOA(Service Oriented Architecture), Google File System, Big Table, Hadoop, Boom filter, etc.
 
 ## Good Concepts:
 - For any system, consider: how much data does the system handle? how much data does the system need to store?
@@ -27,60 +31,71 @@ How does server process heavy calculation in background? Threading? NodeJS threa
   * method of data trasmissio
 6. How does the system scale? What are the limits and trade-off in current design? What improvmenet can be done to design it differently?
   
-
+## Main system design questions
+- Design a whole system
+  - Design Twitter
+  - Design Facebook
+  - Design Uber
+  - Design Whatsapp
+  - Design Flight booking system
+  - Design Google Drive
+- Design a specific functionality
+  - Design a feature to stop user from visiting a site too frequently
+  - Design a functionality to mark all emails as read
+  - Design a button to delete a Tweet
 
 ## Scalibility lecture
 - key concepts:
-	Vertical scaling: add more cpu,ram,hard-drive    
-	Horizontal scaling:add more cheaper computer, distribute traffice && storage into these machiens.     
-	Caching: save some pre-processed data, like sticky session, pre-quried sqls    
-	Load balancing: determine which web server to hit; determine which db to hit if having multiple db    
-	Database replication: for faster read; for reduancy safety    
-	Database partitioning: for faster performance for some contents, or distributed storage    
-	Using NoSQL instead of scaling a relational database    
-	Being asynchronous   
+  Vertical scaling: add more cpu,ram,hard-drive    
+  Horizontal scaling:add more cheaper computer, distribute traffice && storage into these machiens.     
+  Caching: save some pre-processed data, like sticky session, pre-quried sqls    
+  Load balancing: determine which web server to hit; determine which db to hit if having multiple db    
+  Database replication: for faster read; for reduancy safety    
+  Database partitioning: for faster performance for some contents, or distributed storage    
+  Using NoSQL instead of scaling a relational database    
+  Being asynchronous   
 
 - Load Balancer?
-	load balancer is even good to protect server: now backend server can be on LAN with load balancer, so they are protected; and we just expose load balancer to clients.
-	How does load balancer work?
-	There are lots of trade-offs: look at 30:00 of the video. That's all the tradeoffs (http://www.hiredintech.com/system-design/scalability-fundamentals/)
-		- round robin: the load balancer works as a fancy DNS machine, take turns to assign task/request to machine 1,2,3,4...etc. (if we do `nsloopup google.com` on google.com, we can see google does that)
-		- store states/sessions into a dedicated server. but it indroduces server-failure issue. -use RAID, raplication
-			RAID0: strip data at two hardrives, little on each
-			RAID1: mirror data. store at both places
-			RAID10: combination of RAID0 && RAID1.
-			RAID5: 3 drives only 1 of them is used for reduendency.
-			RAID6: multiple drives. any drive can die, then replace, and no data lost.
-		- split by the type of files request: html server, image server; load balancer
-		- split based on actual load (less possible), send package to less busy server
-	Options:
-	Software:
-		ELB: elastic load balancer
-		HAProxy
-		LVS 
-	hardware:
-		Barracuda
-		Cisco
-		Citrix: over-priced, $20k 
-		F5
-	Problem: sticky session (if you revisit the site multiple times seprately, you will still hit the same server)
-		- can store serverID in the cookie (one downside: safety, showed the whole world about server IP). So again, can store a random number/hashed value on Load Balancer. It shows which serverID to hit once revisiting. Remember which back-end server to send cookie to.
+  load balancer is even good to protect server: now backend server can be on LAN with load balancer, so they are protected; and we just expose load balancer to clients.
+  How does load balancer work?
+  There are lots of trade-offs: look at 30:00 of the video. That's all the tradeoffs (http://www.hiredintech.com/system-design/scalability-fundamentals/)
+    - round robin: the load balancer works as a fancy DNS machine, take turns to assign task/request to machine 1,2,3,4...etc. (if we do `nsloopup google.com` on google.com, we can see google does that)
+    - store states/sessions into a dedicated server. but it indroduces server-failure issue. -use RAID, raplication
+      RAID0: strip data at two hardrives, little on each
+      RAID1: mirror data. store at both places
+      RAID10: combination of RAID0 && RAID1.
+      RAID5: 3 drives only 1 of them is used for reduendency.
+      RAID6: multiple drives. any drive can die, then replace, and no data lost.
+    - split by the type of files request: html server, image server; load balancer
+    - split based on actual load (less possible), send package to less busy server
+  Options:
+  Software:
+    ELB: elastic load balancer
+    HAProxy
+    LVS 
+  hardware:
+    Barracuda
+    Cisco
+    Citrix: over-priced, $20k 
+    F5
+  Problem: sticky session (if you revisit the site multiple times seprately, you will still hit the same server)
+    - can store serverID in the cookie (one downside: safety, showed the whole world about server IP). So again, can store a random number/hashed value on Load Balancer. It shows which serverID to hit once revisiting. Remember which back-end server to send cookie to.
 - Caching:
-	file-based caching approach: send .html out.
-		down-side: 1. space. 2. old generated files are really hard to change.
-	mysqul-query cashed: for identical sql request
-	memcached: store in memory of the idetical query. Like a table. store <key, value>.
-		next time when checking, try look up key.
-		Down-side: run out of ram. Solution: LRUCahe, remove old records(double-linked-list)
+  file-based caching approach: send .html out.
+    down-side: 1. space. 2. old generated files are really hard to change.
+  mysqul-query cashed: for identical sql request
+  memcached: store in memory of the idetical query. Like a table. store <key, value>.
+    next time when checking, try look up key.
+    Down-side: run out of ram. Solution: LRUCahe, remove old records(double-linked-list)
 
 - Replication:
-	Master && multiple Slaves
-		advantage: 1. Same request/query will be paste to all slaves, so master fail, just put up one salve; 2. If READ heavy, they are redundant server to lots readings.
-		disadvantage:
-	Must have at least load balancer: that is one-point-failure if just one load balancer
+  Master && multiple Slaves
+    advantage: 1. Same request/query will be paste to all slaves, so master fail, just put up one salve; 2. If READ heavy, they are redundant server to lots readings.
+    disadvantage:
+  Must have at least load balancer: that is one-point-failure if just one load balancer
 
 - Partitioning:
-	based on user informaiton, like name. Put common user (same last name) into certain servers.
+  based on user informaiton, like name. Put common user (same last name) into certain servers.
 
 - Bottleneck: data traffice and data storage
 - 
@@ -90,64 +105,64 @@ We have backend web server
 Sticky session: use cookie and store server ID
 Use load balancer that two web server connects:
 Use load balancer to link to the two master db:
-	Two master db that talks to each other: master-master replication
+  Two master db that talks to each other: master-master replication
 Now we need 2 load balancer to prevent one-point-failure at the webServer-db connection.
 Now we also need 2 load balancers at the (which web server to hit) level, that is another 1-pointer-failure
 Switch for the complex connections: 
-	Now we have so many connections: we need switches to handle the connections.
-	We need at least two ports on each device to: go to the correct switch. Becareful with loop.
+  Now we have so many connections: we need switches to handle the connections.
+  We need at least two ports on each device to: go to the correct switch. Becareful with loop.
 - Eventually we will handle: (1:34:00)
-	Scalibility
-	Redundancy
-	High probablity of up time
-	Resolution against failure
+  Scalibility
+  Redundancy
+  High probablity of up time
+  Resolution against failure
 
 - Another big issue:
-	What is ISP goes down? The whole package mentioned above go down?
-		Amazon solution, another ISP, called avalibility zone: like west, asia, south american.
-		How to distribute IP on different data center? Load Balancer at the DNS level, global Load Balancer.  (Note, if in one building, could be staying at this building)
-			Well, if a building is gone, once your TTL(Time to live) is expired, you will be re-route to another ISP building.
+  What is ISP goes down? The whole package mentioned above go down?
+    Amazon solution, another ISP, called avalibility zone: like west, asia, south american.
+    How to distribute IP on different data center? Load Balancer at the DNS level, global Load Balancer.  (Note, if in one building, could be staying at this building)
+      Well, if a building is gone, once your TTL(Time to live) is expired, you will be re-route to another ISP building.
 
 - Before getting into building:
-	Firewall, only a few ports are open: like tcp80, 443, 22 (ssh)
-	can allow https before first load balancer inside building, and decrypt it after first load balancer
-	at db lever, only 3306 is allowed.
+  Firewall, only a few ports are open: like tcp80, 443, 22 (ssh)
+  can allow https before first load balancer inside building, and decrypt it after first load balancer
+  at db lever, only 3306 is allowed.
 Reason to lock, for example, 3306 not allowed at entering building? Because no one needs to inject query to db from outside of building; sql query usually only need to be done within the building, so lock the building up, don't allow bad sql injection : )
 
 
 ### URL convention Example Final (http://www.hiredintech.com/system-design/final-thoughts/)
 - simple rules:
-	Always start a single machine
-	Benchmark the bottle necks, where it indroduces complexity. (No need to add extra complexity)
-	Think about the questions like: why sql vs. non-sql?
+  Always start a single machine
+  Benchmark the bottle necks, where it indroduces complexity. (No need to add extra complexity)
+  Think about the questions like: why sql vs. non-sql?
 
 - Scalable design:
-	1. Application, web server, handle requests/traffic
-		* start with 1 server
-		* it's better to measure the spark traffic (highest we get)
-		* add load balancer, and a cluster of servers. (could use amazon elastic load balancer, to automatically add more servers)
+  1. Application, web server, handle requests/traffic
+    * start with 1 server
+    * it's better to measure the spark traffic (highest we get)
+    * add load balancer, and a cluster of servers. (could use amazon elastic load balancer, to automatically add more servers)
 
-	2. Data Storage
-		1) Billions of object,  2) each object is small, 3) no relationship between object, 4) read 9x more than write (360read/s, 40writes/s), 5) 3TB urls, 36GB of hashes
-		We can use sql or non-sql
-		In example, go with MySQL
-			widely used
-			Mature tech
-			Clear scaling paradiams(sharding, master/slave replication, master/master replication)
-			Used by fb, twitter, google.
-			* index lookups are very fast (as fast as non-sql)
-		mappings:
-			hash: varchar(6)
-			original_url: varchar(512)
+  2. Data Storage
+    1) Billions of object,  2) each object is small, 3) no relationship between object, 4) read 9x more than write (360read/s, 40writes/s), 5) 3TB urls, 36GB of hashes
+    We can use sql or non-sql
+    In example, go with MySQL
+      widely used
+      Mature tech
+      Clear scaling paradiams(sharding, master/slave replication, master/master replication)
+      Used by fb, twitter, google.
+      * index lookups are very fast (as fast as non-sql)
+    mappings:
+      hash: varchar(6)
+      original_url: varchar(512)
 
-		Over years, it holds 3TB data. Storage-wise, it's okay. However, how to serve up quickly?
-		
-		* First, Use one MySQL table with two varchar fields
-		* Create uinique index on the hash(36GB+). We want to hold it in memory. However, we need to look up fast.
-		* For 1st stemp, vertical scaling of the MySQL machine, adding more RAM (nowadays ram are cheaper too : )
-		* Eventually need to partition the data, into 5 partitions: 600GB of data, 8GB of indexes on each machine. (Partitioning early on, it helps to scale later, just add more nodes)
-		* One day, if read/write are super different, Master-Slave, ... 
-			write to master, and read from slaves.
+    Over years, it holds 3TB data. Storage-wise, it's okay. However, how to serve up quickly?
+    
+    * First, Use one MySQL table with two varchar fields
+    * Create uinique index on the hash(36GB+). We want to hold it in memory. However, we need to look up fast.
+    * For 1st stemp, vertical scaling of the MySQL machine, adding more RAM (nowadays ram are cheaper too : )
+    * Eventually need to partition the data, into 5 partitions: 600GB of data, 8GB of indexes on each machine. (Partitioning early on, it helps to scale later, just add more nodes)
+    * One day, if read/write are super different, Master-Slave, ... 
+      write to master, and read from slaves.
 
 ## Design UBER
 1. Requirements 
@@ -179,9 +194,9 @@ Reason to lock, for example, 3306 not allowed at entering building? Because no o
      * accept rating, comment, report ... 
 
    Server-output: 
-   	 * ack passenger account generation, login, logoff
-   	 * ack driver account generation, login, logoff
-   	 * ack driver/passenger payment info and store to db
+     * ack passenger account generation, login, logoff
+     * ack driver account generation, login, logoff
+     * ack driver/passenger payment info and store to db
      * broadcast driver locations to passenger
      * broadcast passenger locations to driver
      * response pair confirmation to driver && passenger with contact information of driver&&passenger
@@ -268,8 +283,3 @@ Reason to lock, for example, 3306 not allowed at entering building? Because no o
      * For actively moving driver and user: we can store their location data dynamically by region. Once moved into/out of one regin, poll the information from one server into another server. Here, it's wise to use HashTable to store as <userID, everything about this user>. Calculation algorithm may also happen on this server, because both driver && passenger are on this server, defined by region. 
      * Now we've splitted data into servers by region. However, for same region, it might be too much work for one machine. We need to split data aross different machines for same region. Here, use another Hash lookup table to store <live tripID, server ID> to split data into even smaller sections to fit in different server. Now we can have more **regionServer**.
      * A improvement that can be done: for relative static information account,payment,rating, they are only used once or twice during a trip. It might be okay to store these information on a type of server that specifically handles account look up, let's call it **accountServer**. Again, there might be too much account info to store, we can build lookup tables to store <accountID, serverID>. Double again, do MapReduce to hash the keys so that we can split the look up table if the table is too big to store on one server.
-
-
-| Squence | Problem       | Level  | Language  | Tags | Company | Source |
-|:-------:|:--------------|:------:|:---------:|:----:|:-------:|:------:|
-|0|[Top K Frequent Words (Map Reduce)](https://github.com/glc12125/Algo/blob/master/lintcode/Top%20K%20Frequent%20Words%20(Map%20Reduce).cpp)|Medium|C++|[Map Reduce, Big Data]||LintCode|
