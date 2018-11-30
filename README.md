@@ -1,7 +1,7 @@
 # System design interview prepare guide
 Notes and guidance for system design interview prepare
 ### Cracking the system design interview
-**SystemDesign.md**: system design notes
+**[SystemDesign.md](https://github.com/mocksure/system_design/blob/master/SystemDesign.md)**: system design notes
 ### Practise through coding
 
 | Squence | Problem       | Level  | Language  | Tags | Company | Source |
