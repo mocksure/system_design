@@ -1,3 +1,4 @@
+
 This document is to document the learning process for **System Design**.
 A few thoughts about System Design:
 1. What are the typical types of system design interviews?
@@ -13,23 +14,11 @@ Load Balancer, Memcache, NodeJS, MongoDB, MySQL, Sharding, Consistent Hashing, M
 - Scalibility
 
 ## Steps:
-1. **Scope** the problem: Don't make assumptions; Ask questions; Understand the constraints and use cases.
-2. Sketch up an **abstract design** that illustrates the basic components of the system and the relationships between them.
-3. Think about the **bottlenecks** these components face when the system scales.
-4. Address these bottlenecks by using the fundamentals principles of **scalable** system design.
+1. **Scope** the problem: Ask questions; Understand the use cases. Confirm the specifics: number of users per month/day/minute or even second. What are the interfaces. 
+2. **Split** the system/feature into sub modules. Normally sketch up an **abstract design** that illustrates the basic components of the system and the relationships between them.
+3. **Storage** of the system. Decide what storage to use according to the use cases agreed in above steps. Draft the schemas if relational DB shall be used.
+4. **Scale** Address these bottlenecks by using the fundamentals principles of **scalable** system design. Typical technics are Sharding.
 
-- Mine Usual steps: might be too much details on scoping but less efforts onto bottlenecks and scalibility issues.
-1. Identify the key requirements && constraints
-2. Identify the users && Server
-3. Identify inputs/ouputs from different users
-*** Calculate the bandwidth and storage: the amount of data the server handles, and the amount of data server stores.
-4. Based on (1~3), list out the potential features that needs to be implemented
-5. Pick technologies that will be able to implement the features above: 
-  * backend server
-  * user client
-  * method of storage
-  * method of data trasmissio
-6. How does the system scale? What are the limits and trade-off in current design? What improvmenet can be done to design it differently?
   
 ## Main system design questions
 - Design a whole system
