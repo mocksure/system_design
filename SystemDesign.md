@@ -12,6 +12,9 @@ Load Balancer, Memcache, NodeJS, MongoDB, MySQL, Sharding, Consistent Hashing, M
 - For any system, consider: how much data does the system handle? how much data does the system need to store?
 - Popular hashing algorithm: like 35.      What about md5?
 - Scalibility
+- It normally does not matter whether to use Relational DB or NoSQL DB. But to support transactions, Relational DB is necessary.(Unless MongoDB 4.0, which just releases ACID support 2018)
+- You do need to implement some of the features in NoSQL(Serialization, Secondary Index)
+- Most SQL DB does not support Sharding
 
 ## Steps:
 1. **Scope** the problem: Ask questions; Understand the use cases. Confirm the specifics: number of users per month/day/minute or even second. What are the interfaces. 
@@ -19,7 +22,18 @@ Load Balancer, Memcache, NodeJS, MongoDB, MySQL, Sharding, Consistent Hashing, M
 3. **Storage** of the system. Decide what storage to use according to the use cases agreed in above steps. Draft the schemas if relational DB shall be used.
 4. **Scale** Address these bottlenecks by using the fundamentals principles of **scalable** system design. Typical technics are Sharding.
 
-  
+## Facts
+1. Database single machine read qeury bottleneck
+  - MySQL / PosgreSQL, etc: 1k
+  - MongoDB /Cassandra: 10K
+  - Redis / Memcached: 100k - 1m
+
+**Note**: the number varies on different hardware of course.
+
+2. Use cache whenever there is much more reads than write
+
+
+
 ## Main system design questions
 - Design a whole system
   - Design Twitter
@@ -57,16 +71,16 @@ Load Balancer, Memcache, NodeJS, MongoDB, MySQL, Sharding, Consistent Hashing, M
       RAID6: multiple drives. any drive can die, then replace, and no data lost.
     - split by the type of files request: html server, image server; load balancer
     - split based on actual load (less possible), send package to less busy server
-  Options:
-  Software:
-    ELB: elastic load balancer
-    HAProxy
-    LVS 
-  hardware:
-    Barracuda
-    Cisco
-    Citrix: over-priced, $20k 
-    F5
+  - Options:
+    - Software:
+      - ELB: elastic load balancer
+      - HAProxy
+      - LVS 
+    - Hardware:
+      - Barracuda
+      - Cisco
+      - Citrix: over-priced, $20k 
+      - F5
   Problem: sticky session (if you revisit the site multiple times seprately, you will still hit the same server)
     - can store serverID in the cookie (one downside: safety, showed the whole world about server IP). So again, can store a random number/hashed value on Load Balancer. It shows which serverID to hit once revisiting. Remember which back-end server to send cookie to.
 - Caching:
@@ -216,8 +230,18 @@ A --> E(Friendship Service: Follow a user, Unfollow a user)
 |Facebook | Twitter|Instagram|
 
 ### Scale
-1. Optimisation TBD
+
+1. Optimisation
+  - User Serice: Use Cache(Cache aside/Cache through) to speed up read (Session + Cookie)
+  - Use SQL based DB, because we need to search on multiple attributes.
+
 2. Maintenance TBD
+
+3. Single point failure
+  - Sharding: loading balancing, put data on different machines according to specific rules
+    - Vertical Sharding: Sharding by column (Cannot Sharding a huge table with just two columns)
+    - Horizontal Sharding: Sharding by row_key using Consistent Hashing
+  - Replica: split reading. (Blockchain)
 
 ## Design UBER
 1. Requirements 
