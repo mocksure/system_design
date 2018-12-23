@@ -67,7 +67,10 @@ Citied from [Top 15 Most Popular Social Network](https://www.dreamgrow.com/top-1
 
 - Use cache whenever there is much more reads than write
 
-
+- Youtube
+  - 100 million videos watched per day
+  - 65000 videos added per day
+  - At least 45 terabytes of video
 
 ## Main system design questions
 - Design a whole system
