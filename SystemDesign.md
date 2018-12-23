@@ -28,6 +28,8 @@ Load Balancer, Memcache, NodeJS, MongoDB, MySQL, Sharding, Consistent Hashing, M
   - MongoDB /Cassandra: 10K
   - Redis / Memcached: 100k - 1m
 
+**Note**: the number varies on different hardware of course.
+
 2. Social network MAU(Monthly active users)
 
 | Social Network        | Monthly Active Users    | Daily Active Users    |
@@ -48,7 +50,7 @@ Load Balancer, Memcache, NodeJS, MongoDB, MySQL, Sharding, Consistent Hashing, M
 |VK|97,000,000|3.2M|
 |Meetup|35,300,000|1.2M|
 
-**Note**: the number varies on different hardware of course.
+**Note**: Use the DAU * [queries per user] / 86400 to get QPS for a specific service
 
 - Use cache whenever there is much more reads than write
 
