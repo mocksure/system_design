@@ -28,9 +28,29 @@ Load Balancer, Memcache, NodeJS, MongoDB, MySQL, Sharding, Consistent Hashing, M
   - MongoDB /Cassandra: 10K
   - Redis / Memcached: 100k - 1m
 
+2. Social network MAU(Monthly active users)
+
+| Social Network        | Monthly Active Users    | Daily Active Users    |
+|:-----------------:|:------------------------:|:------------------------:|
+|Facebook|2,230,000,000|74M|
+|Youtube|1,900,000,000|63M|
+|Instagram|1,000,000,000|33M|
+|Qzone|563,000,000|18.7M|
+|Weibo|376,000,000|12.5M|
+|Twitter|336,000,000|11.2M|
+|Reddit|330,000,000|11M|
+|Pinterest|200,000,000|6.7M|
+|Ask.fm|160,000,000|5.3M|
+|Tumblr|115,000,000|3.8M|
+|Flicker|112,000,000|3.7M|
+|Google+|111,000,000|3.7M|
+|LinkedIn|106,000,000|3.5M|
+|VK|97,000,000|3.2M|
+|Meetup|35,300,000|1.2M|
+
 **Note**: the number varies on different hardware of course.
 
-2. Use cache whenever there is much more reads than write
+- Use cache whenever there is much more reads than write
 
 
 
