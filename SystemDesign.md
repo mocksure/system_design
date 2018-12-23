@@ -32,7 +32,7 @@ Load Balancer, Memcache, NodeJS, MongoDB, MySQL, Sharding, Consistent Hashing, M
 
 2. Social network MAU(Monthly active users)
 
-| Social Network        | Monthly Active Users    | Daily Active Users    |
+| Social Network Site      | Monthly Active Users    | Daily Active Users    |
 |:-----------------:|:------------------------:|:------------------------:|
 |Facebook|2,230,000,000|74M|
 |Youtube|1,900,000,000|63M|
@@ -50,6 +50,19 @@ Load Balancer, Memcache, NodeJS, MongoDB, MySQL, Sharding, Consistent Hashing, M
 |VK|97,000,000|3.2M|
 |Meetup|35,300,000|1.2M|
 
+
+| Social Network App      | Monthly Active Users    | Daily Active Users    |
+|:-----------------:|:------------------------:|:------------------------:|
+|WhatsApp|1,500,000,000|50M|
+|Messenger|1,300,000,000|43M|
+|Wechat|989,000,000|33M|
+|Instagram|800,000,000|26.7M|
+|QQ Chat|783,000,000|26.1M|
+|VIBER|249,000,000|8.3M|
+|LINE|218,000,000|7.3M|
+|Snapchat|200,000,000|6.7M|
+
+Citied from [Top 15 Most Popular Social Network](https://www.dreamgrow.com/top-15-most-popular-social-networking-sites/)
 **Note**: Use the DAU * [queries per user] / 86400 to get QPS for a specific service
 
 - Use cache whenever there is much more reads than write
